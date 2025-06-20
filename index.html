@@ -7,260 +7,170 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Midnight Blue -->
-    <!-- Application Structure Plan: The application has been redesigned from an interactive tool to a content-focused summary webpage. The core structure remains a tab-based navigation for each chapter to ensure easy access to specific topics. However, the interactive calculators and simulators have been removed and replaced with the full textual content of the summary. This shift prioritizes readability and direct information consumption, as requested. The layout now uses cards to cleanly segment the theoretical concepts within each chapter. -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Scholarly Teal & Cream -->
+    <!-- Application Structure Plan: The SPA has been completely redesigned. It now features a fixed vertical navigation sidebar and a main scrollable content area. This "documentation-style" layout allows users to see all chapters at a glance and navigate between them smoothly while keeping their current position in view. The structure is based on semantic sections, making it more intuitive and accessible than the previous tabbed interface. -->
     <!-- Visualization & Content Choices: 
-        - **Interactive Tools -> Static Content:** Removed all JS calculators and canvas simulators. The primary goal is now to present the summary text clearly.
-        - **LaTeX Equations -> HTML/CSS Formatting:** Corrected all mathematical equations by replacing LaTeX syntax (e.g., $...$) with styled HTML. Fractions are represented linearly (e.g., n = c / v), and special characters/variables are formatted using simple text and subscript/superscript tags (`<sub>`, `<sup>`) for maximum compatibility and correct rendering.
-        - **Light Theme -> Dark Theme:** Implemented a full dark mode color scheme (dark backgrounds, light text) to enhance visual comfort and provide a modern aesthetic.
-        - **Content Organization:** The summary content from the source document is now fully integrated into the corresponding tabs, with each concept enclosed in a card for better structure and scannability.
+        - **Layout -> Vertical Navigation:** The tabbed layout was replaced with a fixed sidebar and a main content area. This improves navigation and contextual awareness. JS is used for smooth scrolling and scroll-spying to highlight the active section in the sidebar.
+        - **Styling -> Light & Professional Theme:** The dark mode was replaced with a light, academic theme (off-white background, dark text, teal accents) for better readability and a cleaner aesthetic.
+        - **UI -> Enhanced with Icons:** The sidebar navigation now includes custom-made CSS icons for each chapter, improving visual appeal and making navigation more intuitive.
+        - **Content Cards -> Refined Design:** Cards now have a softer shadow, a colored top border accent, and improved typography for a more polished and organized look.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
-        body {
-            font-family: 'Cairo', sans-serif;
+        html {
+            scroll-behavior: smooth;
         }
-        .tab-active {
-            border-color: #3b82f6;
-            color: #3b82f6;
-            font-weight: 600;
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .sidebar-link.active {
+            background-color: #0d9488; /* teal-600 */
+            color: white;
+        }
+        .sidebar-link.active .sidebar-icon {
+            filter: brightness(0) invert(1);
         }
         .card {
-            background-color: #1f2937; /* gray-800 */
+            background-color: white;
             border-radius: 0.75rem;
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            background-color: #374151; /* gray-700 */
-        }
-        .ltr-text {
-            direction: ltr;
-            text-align: left;
+            border-top: 4px solid #14b8a6; /* teal-500 */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
         }
         .formula {
             direction: ltr;
             text-align: center;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
             padding: 0.75rem;
-            background-color: #374151; /* gray-700 */
+            background-color: #f1f5f9; /* slate-100 */
             border-radius: 0.5rem;
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-            color: #d1d5db; /* gray-300 */
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            color: #1e293b; /* slate-800 */
+            border-left: 3px solid #14b8a6;
         }
         .bilingual-def {
-            border-right: 3px solid #3b82f6;
+            border-right: 2px solid #5eead4; /* teal-300 */
             padding-right: 1rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+        }
+        .sidebar-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-block;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200">
+<body class="bg-slate-50 text-slate-800">
 
-    <div class="container mx-auto p-4 md:p-8">
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-blue-400">ملخص شامل في البصريات الهندسية والفيزياء الحيوية</h1>
-            <p class="text-lg text-gray-400 mt-2">مراجعة شاملة للامتحان</p>
-        </header>
-
-        <!-- Tabs Navigation -->
-        <div class="mb-6 border-b border-gray-700">
-            <nav class="flex flex-wrap -mb-px" id="tabs-nav">
-                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-600 hover:text-gray-300 focus:outline-none tab-active" data-tab="tab1">الفصل 1: المبادئ</button>
-                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-600 hover:text-gray-300 focus:outline-none" data-tab="tab2">الفصل 2: المرايا والصفائح</button>
-                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-600 hover:text-gray-300 focus:outline-none" data-tab="tab3">الفصل 3: العدسات</button>
-                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-600 hover:text-gray-300 focus:outline-none" data-tab="tab4">الفصل 4: العين</button>
-                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-600 hover:text-gray-300 focus:outline-none" data-tab="tab5">الفصل 5: الإشعاع</button>
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="sticky top-0 h-screen w-64 bg-white shadow-lg p-4 hidden md:block">
+            <h2 class="text-xl font-bold text-teal-600 mb-6 text-center">فهرس المراجعة</h2>
+            <nav>
+                <ul class="space-y-2" id="sidebar-nav">
+                    <li><a href="#section1" class="sidebar-link flex items-center p-3 rounded-lg hover:bg-teal-50 text-slate-700 transition-colors duration-200">
+                        <span class="sidebar-icon mr-3 ml-3"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#0d9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="#0d9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12L12 17L22 12" stroke="#0d9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>المبادئ الأساسية</a></li>
+                    <li><a href="#section2" class="sidebar-link flex items-center p-3 rounded-lg hover:bg-teal-50 text-slate-700 transition-colors duration-200">
+                        <span class="sidebar-icon mr-3 ml-3"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12H21M3 6H21V18H3V6Z" stroke="#0d9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>المرايا والصفائح</a></li>
+                    <li><a href="#section3" class="sidebar-link flex items-center p-3 rounded-lg hover:bg-teal-50 text-slate-700 transition-colors duration-200">
+                        <span class="sidebar-icon mr-3 ml-3"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z" stroke="#0d9488" stroke-width="2" stroke-miterlimit="10"/><path d="M12 6C15.3137 6 18 8.68629 18 12C18 15.3137 15.3137 18 12 18" stroke="#0d9488" stroke-width="2" stroke-miterlimit="10"/></svg></span>العدسات</a></li>
+                    <li><a href="#section4" class="sidebar-link flex items-center p-3 rounded-lg hover:bg-teal-50 text-slate-700 transition-colors duration-200">
+                        <span class="sidebar-icon mr-3 ml-3"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z" stroke="#0d9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="#0d9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>العين</a></li>
+                    <li><a href="#section5" class="sidebar-link flex items-center p-3 rounded-lg hover:bg-teal-50 text-slate-700 transition-colors duration-200">
+                        <span class="sidebar-icon mr-3 ml-3"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.969 12.75L12 21.5M7.06901 9.75L4.5 4.5L9.75 7.069M16.931 9.75L19.5 4.5L14.25 7.069M12 12.75C15.3137 12.75 18 10.0637 18 6.75C18 3.43629 15.3137 0.75 12 0.75C8.68629 0.75 6 3.43629 6 6.75C6 10.0637 8.68629 12.75 12 12.75Z" stroke="#0d9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>الإشعاع</a></li>
+                </ul>
             </nav>
-        </div>
+        </aside>
 
-        <!-- Tabs Content -->
-        <div id="tabs-content">
-            <!-- Tab 1: Principles -->
-            <div id="tab1" class="tab-content">
-                <div class="space-y-6">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">1.1. انتشار الضوء (Propagation de la lumière)</h3>
-                        <div class="bilingual-def">
-                            <p class="font-semibold text-gray-300">Principe de propagation rectiligne:</p>
-                            <p>Dans un milieu homogène, transparent et isotrope, la lumière se propage en ligne droite.</p>
-                            <p class="mt-1"><strong>مبدأ الانتشار المستقيم:</strong> في وسط شفاف ومتجانس، ينتشر الضوء في خطوط مستقيمة.</p>
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10">
+            <header class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-slate-900">ملخص شامل في البصريات والفيزياء الحيوية</h1>
+                <p class="text-xl text-slate-500 mt-2">مراجعة شاملة للامتحان</p>
+            </header>
+
+            <div class="space-y-12">
+                <!-- Section 1 -->
+                <section id="section1">
+                    <h2 class="text-3xl font-bold mb-6 border-b-2 border-teal-500 pb-2 text-slate-800">الفصل 1: المبادئ الأساسية</h2>
+                    <div class="space-y-6">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-3 text-teal-700">1.1. انتشار الضوء (Propagation de la lumière)</h3>
+                            <div class="bilingual-def"><p class="font-semibold text-slate-600">Principe de propagation rectiligne:</p><p class="text-slate-800">Dans un milieu homogène, transparent et isotrope, la lumière se propage en ligne droite.</p><p class="mt-1"><strong>مبدأ الانتشار المستقيم:</strong> في وسط شفاف ومتجانس، ينتشر الضوء في خطوط مستقيمة.</p></div>
+                            <div class="bilingual-def"><p class="font-semibold text-slate-600">Principe de Fermat:</p><p class="text-slate-800">La lumière se propage d'un point à un autre de telle sorte que la durée du trajet soit minimale.</p><p class="mt-1"><strong>مبدأ فيرما:</strong> يسلك الضوء المسار الذي يستغرق أقصر وقت ممكن للانتقال بين نقطتين.</p></div>
                         </div>
-                        <div class="bilingual-def">
-                            <p class="font-semibold text-gray-300">Principe de Fermat:</p>
-                            <p>La lumière se propage d'un point à un autre de telle sorte que la durée du trajet soit minimale.</p>
-                            <p class="mt-1"><strong>مبدأ فيرما:</strong> يسلك الضوء المسار الذي يستغرق أقصر وقت ممكن للانتقال بين نقطتين.</p>
-                        </div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">1.2. معامل الانكسار (Indice de réfraction)</h3><div class="bilingual-def"><p class="font-semibold text-slate-600">Définition:</p><p class="text-slate-800">L'indice de réfraction `n` d'un milieu caractérise la vitesse de la lumière dans ce milieu.</p><p class="mt-1"><strong>التعريف:</strong> هو مقدار يصف مدى إعاقة الوسط لمرور الضوء من خلاله.</p></div><div class="formula">n = c / v</div><p>حيث c هي سرعة الضوء في الفراغ و v هي سرعته في الوسط.</p></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">1.3. قوانين سنيل-ديكارت (Lois de Snell-Descartes)</h3><h4 class="font-semibold text-lg mb-2 text-slate-600">Réflexion (الانعكاس)</h4><p class="mb-3">L'angle de réflexion i' est égal à l'angle d'incidence i. (زاوية الانعكاس تساوي زاوية السقوط).</p><div class="formula">i = i'</div><h4 class="font-semibold text-lg mt-4 mb-2 text-slate-600">Réfraction (الانكسار)</h4><p class="mb-3">La relation entre l'angle d'incidence i et l'angle de réfraction r est: (العلاقة بين زاوية السقوط وزاوية الانكسار هي):</p><div class="formula">n<sub>1</sub> sin(i) = n<sub>2</sub> sin(r)</div></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">1.4. الأنظمة البصرية: الجسم والصورة (Systèmes optiques: Objet et Image)</h3><div class="bilingual-def"><p class="font-semibold text-slate-600">Stigmatisme:</p><p class="text-slate-800">Un système optique est rigoureusement stigmatique si tous les rayons émis par un point objet A, convergent en un seul point image A’.</p><p class="mt-1"><strong>الدقة النقطية:</strong> يكون النظام البصري دقيقاً نقطياً إذا كانت جميع الأشعة الصادرة من نقطة جسم واحدة تتجمع في نقطة صورة واحدة.</p></div><ul class="list-disc list-inside mt-4 space-y-2"><li><strong>الجسم الحقيقي (Objet Réel):</strong> مصدر حقيقي للأشعة الضوئية (source réelle des rayons lumineux).</li><li><strong>الجسم الوهمي (Objet Virtuel):</strong> نقطة تلتقي فيها امتدادات الأشعة الساقطة (point de convergence des rayons incidents).</li><li><strong>الصورة الحقيقية (Image Réelle):</strong> تتكون من التقاء الأشعة الخارجة ويمكن استقبالها على حاجز (formée par la convergence réelle des rayons).</li><li><strong>الصورة الوهمية (Image Virtuelle):</strong> تتكون من التقاء امتدادات الأشعة الخارجة ولا يمكن استقبالها على حاجز (formée par la convergence des prolongements des rayons).</li></ul></div>
                     </div>
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">1.2. معامل الانكسار (Indice de réfraction)</h3>
-                        <div class="bilingual-def">
-                            <p class="font-semibold text-gray-300">Définition:</p>
-                             <p>L'indice de réfraction `n` d'un milieu caractérise la vitesse de la lumière dans ce milieu.</p>
-                            <p class="mt-1"><strong>التعريف:</strong> هو مقدار يصف مدى إعاقة الوسط لمرور الضوء من خلاله.</p>
-                        </div>
-                        <div class="formula">n = c / v</div>
-                        <p>حيث c هي سرعة الضوء في الفراغ و v هي سرعته في الوسط.</p>
+                </section>
+                
+                <!-- Section 2 -->
+                <section id="section2">
+                    <h2 class="text-3xl font-bold mb-6 border-b-2 border-teal-500 pb-2 text-slate-800">الفصل 2: المرايا والصفائح</h2>
+                    <div class="space-y-6">
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">2.1. المرآة المستوية (Miroir Plan)</h3><p class="mb-2">صورة الجسم الحقيقي تكون وهمية، متناظرة مع الجسم بالنسبة للمرآة، وبنفس حجم الجسم (L'image est virtuelle, symétrique et de même taille).</p><div class="formula">OA = -OA'</div></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">2.2. صفيحة متوازية الوجهين (Lame à faces parallèles)</h3><p>الشعاع الضوئي الذي يعبرها يتعرض لإزاحة جانبية، لكنه يخرج موازياً لاتجاهه الأصلي (Le rayon émergent est parallèle au rayon incident).</p></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">2.3. الموشور (Prisme)</h3><p>وسط شفاف يحرف مسار الأشعة الضوئية ويحلل الضوء الأبيض. معادلاته الأساسية هي:</p><div class="space-y-3 mt-4"><div class="formula">A = r + r' &nbsp; (Angle du prisme - زاوية الموشور)</div><div class="formula">D = i + i' - A &nbsp; (Déviation - زاوية الانحراف)</div></div></div>
                     </div>
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">1.3. قوانين سنيل-ديكارت (Lois de Snell-Descartes)</h3>
-                        <h4 class="font-semibold text-lg mb-2 text-gray-300">Réflexion (الانعكاس)</h4>
-                        <p class="mb-3">L'angle de réflexion i' est égal à l'angle d'incidence i. (زاوية الانعكاس تساوي زاوية السقوط).</p>
-                        <div class="formula">i = i'</div>
-                        <h4 class="font-semibold text-lg mt-4 mb-2 text-gray-300">Réfraction (الانكسار)</h4>
-                        <p class="mb-3">La relation entre l'angle d'incidence i et l'angle de réfraction r est: (العلاقة بين زاوية السقوط وزاوية الانكسار هي):</p>
-                        <div class="formula">n<sub>1</sub> sin(i) = n<sub>2</sub> sin(r)</div>
-                    </div>
-                     <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">1.4. الأنظمة البصرية: الجسم والصورة (Systèmes optiques: Objet et Image)</h3>
-                         <div class="bilingual-def">
-                            <p class="font-semibold text-gray-300">Stigmatisme:</p>
-                             <p>Un système optique est rigoureusement stigmatique si tous les rayons émis par un point objet A, convergent en un seul point image A’.</p>
-                            <p class="mt-1"><strong>الدقة النقطية:</strong> يكون النظام البصري دقيقاً نقطياً إذا كانت جميع الأشعة الصادرة من نقطة جسم واحدة تتجمع في نقطة صورة واحدة.</p>
-                         </div>
-                         <ul class="list-disc list-inside mt-4 space-y-2">
-                            <li><strong>الجسم الحقيقي (Objet Réel):</strong> مصدر حقيقي للأشعة الضوئية (source réelle des rayons lumineux).</li>
-                            <li><strong>الجسم الوهمي (Objet Virtuel):</strong> نقطة تلتقي فيها امتدادات الأشعة الساقطة (point de convergence des rayons incidents).</li>
-                            <li><strong>الصورة الحقيقية (Image Réelle):</strong> تتكون من التقاء الأشعة الخارجة ويمكن استقبالها على حاجز (formée par la convergence réelle des rayons).</li>
-                            <li><strong>الصورة الوهمية (Image Virtuelle):</strong> تتكون من التقاء امتدادات الأشعة الخارجة ولا يمكن استقبالها على حاجز (formée par la convergence des prolongements des rayons).</li>
-                         </ul>
-                    </div>
-                </div>
-            </div>
+                </section>
 
-            <!-- Tab 2: Mirrors -->
-            <div id="tab2" class="tab-content hidden">
-                 <div class="space-y-6">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">2.1. المرآة المستوية (Miroir Plan)</h3>
-                        <p class="mb-2">صورة الجسم الحقيقي تكون وهمية، متناظرة مع الجسم بالنسبة للمرآة، وبنفس حجم الجسم (L'image est virtuelle, symétrique et de même taille).</p>
-                        <div class="formula">OA = -OA'</div>
+                <!-- Section 3 -->
+                <section id="section3">
+                    <h2 class="text-3xl font-bold mb-6 border-b-2 border-teal-500 pb-2 text-slate-800">الفصل 3: العدسات</h2>
+                    <div class="space-y-6">
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">3.1. السطح الكاسر الكروي (Dioptre Sphérique)</h3><p class="mb-2">سطح كروي يفصل بين وسطين. علاقته الأساسية (الأصل في القمة S) هي:</p><p class="text-center text-slate-500">(Relation de conjugaison avec origine au sommet S)</p><div class="formula">(n<sub>2</sub> / SA') - (n<sub>1</sub> / SA) = (n<sub>2</sub> - n<sub>1</sub>) / R</div><p class="mt-2">حيث p = SA هو موضع الجسم, p' = SA' هو موضع الصورة, و R = SC هو نصف قطر التكور.</p></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">3.2. العدسات الرقيقة (Lentilles Minces)</h3><p class="mb-2"><strong>علاقة الاقتران (Relation de conjugaison - الأصل في المركز البصري O):</strong></p><div class="formula">1/OA' - 1/OA = 1/f'</div><p class="mb-2 mt-4"><strong>التكبير العرضي (Grandissement transversal):</strong></p><div class="formula">&gamma; = A'B' / AB = OA' / OA</div><p class="mb-2 mt-4"><strong>القدرة (Vergence):</strong></p><div class="formula">C = 1/f'</div></div>
                     </div>
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">2.2. صفيحة متوازية الوجهين (Lame à faces parallèles)</h3>
-                        <p>الشعاع الضوئي الذي يعبرها يتعرض لإزاحة جانبية، لكنه يخرج موازياً لاتجاهه الأصلي (Le rayon émergent est parallèle au rayon incident).</p>
-                    </div>
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">2.3. الموشور (Prisme)</h3>
-                        <p>وسط شفاف يحرف مسار الأشعة الضوئية ويحلل الضوء الأبيض. معادلاته الأساسية هي:</p>
-                        <div class="space-y-3 mt-4">
-                            <div class="formula">A = r + r' &nbsp; (Angle du prisme - زاوية الموشور)</div>
-                            <div class="formula">D = i + i' - A &nbsp; (Déviation - زاوية الانحراف)</div>
-                        </div>
-                    </div>
-                 </div>
-            </div>
+                </section>
 
-            <!-- Tab 3: Lenses -->
-            <div id="tab3" class="tab-content hidden">
-                 <div class="space-y-6">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">3.1. السطح الكاسر الكروي (Dioptre Sphérique)</h3>
-                        <p class="mb-2">سطح كروي يفصل بين وسطين. علاقته الأساسية (الأصل في القمة S) هي:</p>
-                        <p class="text-center text-gray-400">(Relation de conjugaison avec origine au sommet S)</p>
-                        <div class="formula">(n<sub>2</sub> / SA') - (n<sub>1</sub> / SA) = (n<sub>2</sub> - n<sub>1</sub>) / R</div>
-                        <p class="mt-2">حيث p = SA هو موضع الجسم, p' = SA' هو موضع الصورة, و R = SC هو نصف قطر التكور.</p>
+                <!-- Section 4 -->
+                <section id="section4">
+                    <h2 class="text-3xl font-bold mb-6 border-b-2 border-teal-500 pb-2 text-slate-800">الفصل 4: العين</h2>
+                     <div class="space-y-6">
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">4.1. نموذج العين والمطابقة (Modèle de l'œil et Accommodation)</h3><p><strong>نموذج العين المبسط:</strong> يمكن نمذجة العين كعدسة مجمعة (البلورية - Cristallin) ذات قدرة متغيرة، وشاشة (الشبكية - Rétine).</p><p class="mt-2"><strong>المطابقة (Accommodation):</strong> هي قدرة العين على تغيير قدرتها لرؤية الأجسام على مسافات مختلفة بوضوح (capacité de l'œil à modifier sa vergence).</p></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">4.2. النقاط المميزة للعين (Points Caractéristiques)</h3><ul class="list-disc list-inside mt-4 space-y-2"><li><strong>النقطة البعيدة (Punctum Remotum - PR):</strong> أبعد نقطة تراها العين بوضوح بدون مطابقة (au repos). للعين السليمة (œil normal)، تكون في اللانهاية (à l'infini).</li><li><strong>النقطة القريبة (Punctum Proximum - PP):</strong> أقرب نقطة تراها العين بوضوح مع أقصى مطابقة (accommodation maximale). للعين السليمة، تكون على بعد 25 سم تقريبًا.</li></ul></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">4.3. عيوب الإبصار وتصحيحها (Défauts de vision et correction)</h3><ul class="list-disc list-inside mt-4 space-y-2"><li><strong>قصر النظر (Myopie):</strong> العين مجمعة أكثر من اللازم (œil trop convergent)، الصورة تتكون أمام الشبكية. التصحيح: عدسة **مفرقة (divergente)**.</li><li><strong>طول النظر (Hypermétropie):</strong> العين ليست مجمعة بما فيه الكفاية (œil pas assez convergent)، الصورة تتكون خلف الشبكية. التصحيح: عدسة **مجمعة (convergente)**.</li><li><strong>قصور البصر الشيخوخي (Presbytie):</strong> فقدان القدرة على المطابقة مع التقدم في العمر (perte du pouvoir d'accommodation). التصحيح: عدسة **مجمعة** للرؤية عن قرب.</li></ul></div>
                     </div>
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">3.2. العدسات الرقيقة (Lentilles Minces)</h3>
-                        <p class="mb-2"><strong>علاقة الاقتران (Relation de conjugaison - الأصل في المركز البصري O):</strong></p>
-                        <div class="formula">1/OA' - 1/OA = 1/f'</div>
-                        <p class="mb-2 mt-4"><strong>التكبير العرضي (Grandissement transversal):</strong></p>
-                        <div class="formula">&gamma; = A'B' / AB = OA' / OA</div>
-                         <p class="mb-2 mt-4"><strong>القدرة (Vergence):</strong></p>
-                        <div class="formula">C = 1/f'</div>
-                    </div>
-                </div>
-            </div>
+                </section>
 
-            <!-- Tab 4: The Eye -->
-            <div id="tab4" class="tab-content hidden">
-                 <div class="space-y-6">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">4.1. نموذج العين والمطابقة (Modèle de l'œil et Accommodation)</h3>
-                        <p><strong>نموذج العين المبسط:</strong> يمكن نمذجة العين كعدسة مجمعة (البلورية - Cristallin) ذات قدرة متغيرة، وشاشة (الشبكية - Rétine).</p>
-                        <p class="mt-2"><strong>المطابقة (Accommodation):</strong> هي قدرة العين على تغيير قدرتها لرؤية الأجسام على مسافات مختلفة بوضوح (capacité de l'œil à modifier sa vergence).</p>
+                <!-- Section 5 -->
+                <section id="section5">
+                    <h2 class="text-3xl font-bold mb-6 border-b-2 border-teal-500 pb-2 text-slate-800">الفصل 5: الإشعاع</h2>
+                    <div class="space-y-6">
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">5.1. النشاط الإشعاعي وأنواعه (Radioactivité et ses types)</h3><p>ظاهرة تتحول فيها النوى الذرية غير المستقرة (noyaux atomiques instables) تلقائيًا إلى نوى أكثر استقرارًا، مع إطلاق إشعاعات.</p><ul class="list-disc list-inside mt-4 space-y-2"><li><strong>ألفا (&alpha;):</strong> إصدار نواة هيليوم (noyau d'hélium). قدرة اختراق ضعيفة جداً.</li><li><strong>بيتا (&beta;<sup>-</sup> , &beta;<sup>+</sup>):</strong> إصدار إلكترون أو بوزيترون. قدرة اختراق ضعيفة.</li><li><strong>غاما (&gamma;):</strong> إصدار فوتون عالي الطاقة (photon de haute énergie). قدرة اختراق عالية جداً.</li></ul></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">5.2. قانون التناقص الإشعاعي (Loi de décroissance radioactive)</h3><p class="mb-2">ينخفض نشاط عينة مشعة A(t) بشكل أسي مع الزمن.</p><div class="formula">A(t) = A<sub>0</sub> e<sup>-&lambda;t</sup></div><p class="mt-4 mb-2"><strong>عمر النصف (Période ou demi-vie - T<sub>1/2</sub>):</strong> الزمن اللازم لينخفض النشاط إلى النصف.</p><div class="formula">T<sub>1/2</sub> = ln(2) / &lambda; &asymp; 0.693 / &lambda;</div></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">5.3. تفاعل الإشعاعات مع المادة (Interaction des rayonnements avec la matière)</h3><ul class="list-disc list-inside mt-4 space-y-2"><li><strong>الإشعاعات المؤينة (Rayonnements ionisants):</strong> إشعاعات لديها طاقة كافية لنزع الإلكترونات من الذرات.</li><li><strong>قدرة الاختراق (Pouvoir de pénétration):</strong> تزداد بالترتيب &alpha; < &beta; < &gamma;.</li><li><strong>نقل الطاقة الخطي (Transfert Linéique d'Énergie - TLE):</strong> الطاقة التي يودعها الإشعاع في المادة لكل وحدة مسافة.</li></ul></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-3 text-teal-700">5.4. تطبيقات طبية (Applications médicales)</h3><ul class="list-disc list-inside mt-4 space-y-2"><li><strong>التصوير الومضاني (Scintigraphie):</strong> استخدام مواد مشعة (مثل <sup>99m</sup>Tc) لتكوين صور وظيفية للأعضاء.</li><li><strong>العلاج الإشعاعي (Radiothérapie):</strong> استخدام إشعاعات مؤينة عالية الطاقة لتدمير الخلايا السرطانية.</li></ul></div>
                     </div>
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">4.2. النقاط المميزة للعين (Points Caractéristiques)</h3>
-                         <ul class="list-disc list-inside mt-4 space-y-2">
-                             <li><strong>النقطة البعيدة (Punctum Remotum - PR):</strong> أبعد نقطة تراها العين بوضوح بدون مطابقة (au repos). للعين السليمة (œil normal)، تكون في اللانهاية (à l'infini).</li>
-                             <li><strong>النقطة القريبة (Punctum Proximum - PP):</strong> أقرب نقطة تراها العين بوضوح مع أقصى مطابقة (accommodation maximale). للعين السليمة، تكون على بعد 25 سم تقريبًا.</li>
-                         </ul>
-                    </div>
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">4.3. عيوب الإبصار وتصحيحها (Défauts de vision et correction)</h3>
-                        <ul class="list-disc list-inside mt-4 space-y-2">
-                            <li><strong>قصر النظر (Myopie):</strong> العين مجمعة أكثر من اللازم (œil trop convergent)، الصورة تتكون أمام الشبكية. التصحيح: عدسة **مفرقة (divergente)**.</li>
-                            <li><strong>طول النظر (Hypermétropie):</strong> العين ليست مجمعة بما فيه الكفاية (œil pas assez convergent)، الصورة تتكون خلف الشبكية. التصحيح: عدسة **مجمعة (convergente)**.</li>
-                            <li><strong>قصور البصر الشيخوخي (Presbytie):</strong> فقدان القدرة على المطابقة مع التقدم في العمر (perte du pouvoir d'accommodation). التصحيح: عدسة **مجمعة** للرؤية عن قرب.</li>
-                        </ul>
-                    </div>
-                </div>
+                </section>
             </div>
-
-            <!-- Tab 5: Radiation -->
-            <div id="tab5" class="tab-content hidden">
-                <div class="space-y-6">
-                     <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">5.1. النشاط الإشعاعي وأنواعه (Radioactivité et ses types)</h3>
-                         <p>ظاهرة تتحول فيها النوى الذرية غير المستقرة (noyaux atomiques instables) تلقائيًا إلى نوى أكثر استقرارًا، مع إطلاق إشعاعات.</p>
-                        <ul class="list-disc list-inside mt-4 space-y-2">
-                            <li><strong>ألفا (&alpha;):</strong> إصدار نواة هيليوم (noyau d'hélium). قدرة اختراق ضعيفة جداً.</li>
-                            <li><strong>بيتا (&beta;<sup>-</sup> , &beta;<sup>+</sup>):</strong> إصدار إلكترون أو بوزيترون. قدرة اختراق ضعيفة.</li>
-                            <li><strong>غاما (&gamma;):</strong> إصدار فوتون عالي الطاقة (photon de haute énergie). قدرة اختراق عالية جداً.</li>
-                        </ul>
-                    </div>
-                     <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">5.2. قانون التناقص الإشعاعي (Loi de décroissance radioactive)</h3>
-                        <p class="mb-2">ينخفض نشاط عينة مشعة A(t) بشكل أسي مع الزمن.</p>
-                        <div class="formula">A(t) = A<sub>0</sub> e<sup>-&lambda;t</sup></div>
-                        <p class="mt-4 mb-2"><strong>عمر النصف (Période ou demi-vie - T<sub>1/2</sub>):</strong> الزمن اللازم لينخفض النشاط إلى النصف.</p>
-                        <div class="formula">T<sub>1/2</sub> = ln(2) / &lambda; &asymp; 0.693 / &lambda;</div>
-                    </div>
-                     <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">5.3. تفاعل الإشعاعات مع المادة (Interaction des rayonnements avec la matière)</h3>
-                        <ul class="list-disc list-inside mt-4 space-y-2">
-                            <li><strong>الإشعاعات المؤينة (Rayonnements ionisants):</strong> إشعاعات لديها طاقة كافية لنزع الإلكترونات من الذرات.</li>
-                            <li><strong>قدرة الاختراق (Pouvoir de pénétration):</strong> تزداد بالترتيب &alpha; < &beta; < &gamma;.</li>
-                            <li><strong>نقل الطاقة الخطي (Transfert Linéique d'Énergie - TLE):</strong> الطاقة التي يودعها الإشعاع في المادة لكل وحدة مسافة.</li>
-                        </ul>
-                    </div>
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-400">5.4. تطبيقات طبية (Applications médicales)</h3>
-                        <ul class="list-disc list-inside mt-4 space-y-2">
-                             <li><strong>التصوير الومضاني (Scintigraphie):</strong> استخدام مواد مشعة (مثل <sup>99m</sup>Tc) لتكوين صور وظيفية للأعضاء.</li>
-                             <li><strong>العلاج الإشعاعي (Radiothérapie):</strong> استخدام إشعاعات مؤينة عالية الطاقة لتدمير الخلايا السرطانية.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
 
     <script>
-        // Tab functionality
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('#sidebar-nav a');
 
-        document.getElementById('tabs-nav').addEventListener('click', (e) => {
-            if (e.target.classList.contains('tab-button')) {
-                const targetTab = e.target.dataset.tab;
-
-                tabButtons.forEach(button => {
-                    button.classList.remove('tab-active');
-                });
-                e.target.classList.add('tab-active');
-
-                tabContents.forEach(content => {
-                    content.classList.add('hidden');
-                    if (content.id === targetTab) {
-                        content.classList.remove('hidden');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
                     }
                 });
-            }
+            }, { rootMargin: "-30% 0px -70% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
         });
     </script>
 </body>
