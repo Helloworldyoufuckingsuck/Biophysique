@@ -3,66 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مراجعة تفاعلية للبصريات والفيزياء الحيوية</title>
+    <title>ملخص البصريات والفيزياء الحيوية</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Serene Study -->
-    <!-- Application Structure Plan: The SPA is built around a primary tab navigation system, with each tab representing a key chapter from the source summary (Optics Principles, Lenses, The Eye, etc.). This modular structure allows students to focus on specific topics for revision. Each chapter's section contains not only the theoretical text but is enhanced with interactive tools: calculators for lens and decay formulas, and a custom canvas-based simulator for eye defects. This design transforms the static document into a dynamic study aid, promoting active learning and self-assessment by allowing users to directly apply and visualize complex concepts. -->
+    <!-- Chosen Palette: Midnight Blue -->
+    <!-- Application Structure Plan: The application has been redesigned from an interactive tool to a content-focused summary webpage. The core structure remains a tab-based navigation for each chapter to ensure easy access to specific topics. However, the interactive calculators and simulators have been removed and replaced with the full textual content of the summary. This shift prioritizes readability and direct information consumption, as requested. The layout now uses cards to cleanly segment the theoretical concepts within each chapter. -->
     <!-- Visualization & Content Choices: 
-        - **Formulas -> Practice -> Interactive Calculators:** Key equations (Snell's Law, Thin Lens, Radioactive Decay) are implemented as vanilla JS calculators. This enables users to input their own values, verify exercise results, and actively engage with the formulas.
-        - **Eye Defects -> Understand -> Custom Canvas Simulator:** A dynamic ray-tracing diagram on an HTML Canvas visually demonstrates how vision defects (myopia, hypermetropia) affect light focus and how corrective lenses work. This visual feedback is more intuitive than static diagrams.
-        - **Radioactive Decay -> Understand Change -> Chart.js Line Chart:** A responsive line chart from Chart.js plots the exponential decay curve based on user inputs, providing a clear visualization of the half-life concept.
-        - **Content Structure -> Organize -> Tabs & Cards:** The main content is segmented into tabs for easy, non-linear navigation. Within each tab, information is presented in distinct cards to group related concepts, improving readability and organization. 
+        - **Interactive Tools -> Static Content:** Removed all JS calculators and canvas simulators. The primary goal is now to present the summary text clearly.
+        - **LaTeX Equations -> HTML/CSS Formatting:** Corrected all mathematical equations by replacing LaTeX syntax (e.g., $...$) with styled HTML. Fractions are represented linearly (e.g., n = c / v), and special characters/variables are formatted using simple text and subscript/superscript tags (`<sub>`, `<sup>`) for maximum compatibility and correct rendering.
+        - **Light Theme -> Dark Theme:** Implemented a full dark mode color scheme (dark backgrounds, light text) to enhance visual comfort and provide a modern aesthetic.
+        - **Content Organization:** The summary content from the source document is now fully integrated into the corresponding tabs, with each concept enclosed in a card for better structure and scannability.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #f8f9fa;
         }
         .tab-active {
-            border-bottom-color: #3b82f6;
+            border-color: #3b82f6;
             color: #3b82f6;
             font-weight: 600;
         }
         .card {
-            background-color: white;
+            background-color: #1f2937; /* gray-800 */
             border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             transition: all 0.3s ease;
         }
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
-        }
-        .rtl-input {
-            text-align: right;
+            background-color: #374151; /* gray-700 */
         }
         .ltr-text {
             direction: ltr;
             text-align: left;
         }
+        .formula {
+            direction: ltr;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 0.75rem;
+            background-color: #374151; /* gray-700 */
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #d1d5db; /* gray-300 */
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-900 text-gray-200">
 
     <div class="container mx-auto p-4 md:p-8">
         <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-blue-600">ملخص شامل في البصريات الهندسية والفيزياء الحيوية</h1>
-            <p class="text-lg text-gray-600 mt-2">أداة مراجعة تفاعلية للامتحان</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-400">ملخص شامل في البصريات الهندسية والفيزياء الحيوية</h1>
+            <p class="text-lg text-gray-400 mt-2">مراجعة شاملة للامتحان</p>
         </header>
 
         <!-- Tabs Navigation -->
-        <div class="mb-6 border-b border-gray-200">
+        <div class="mb-6 border-b border-gray-700">
             <nav class="flex flex-wrap -mb-px" id="tabs-nav">
-                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 focus:outline-none tab-active" data-tab="tab1">الفصل 1: المبادئ</button>
-                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 focus:outline-none" data-tab="tab2">الفصل 2: المرايا</button>
-                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 focus:outline-none" data-tab="tab3">الفصل 3: العدسات</button>
-                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 focus:outline-none" data-tab="tab4">الفصل 4: العين</button>
-                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-600 focus:outline-none" data-tab="tab5">الفصل 5: الإشعاع</button>
+                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-600 hover:text-gray-300 focus:outline-none tab-active" data-tab="tab1">الفصل 1: المبادئ</button>
+                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-600 hover:text-gray-300 focus:outline-none" data-tab="tab2">الفصل 2: المرايا والصفائح</button>
+                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-600 hover:text-gray-300 focus:outline-none" data-tab="tab3">الفصل 3: العدسات</button>
+                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-600 hover:text-gray-300 focus:outline-none" data-tab="tab4">الفصل 4: العين</button>
+                <button class="tab-button text-lg py-4 px-6 border-b-2 border-transparent hover:border-gray-600 hover:text-gray-300 focus:outline-none" data-tab="tab5">الفصل 5: الإشعاع</button>
             </nav>
         </div>
 
@@ -70,61 +75,58 @@
         <div id="tabs-content">
             <!-- Tab 1: Principles -->
             <div id="tab1" class="tab-content">
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-6">
                     <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-500">1.1. انتشار الضوء (Propagation de la lumière)</h3>
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">1.1. انتشار الضوء (Propagation de la lumière)</h3>
                         <p class="mb-2"><strong>مبدأ الانتشار المستقيم:</strong> في وسط شفاف ومتجانس، ينتشر الضوء في خطوط مستقيمة.</p>
                         <p><strong>مبدأ فيرما:</strong> يسلك الضوء المسار الذي يستغرق أقصر وقت ممكن للانتقال بين نقطتين.</p>
                     </div>
                     <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-500">1.2. معامل الانكسار (Indice de réfraction)</h3>
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">1.2. معامل الانكسار (Indice de réfraction)</h3>
                         <p class="mb-2">مقدار يصف مدى إعاقة الوسط لمرور الضوء من خلاله.</p>
-                        <p class="ltr-text text-center text-lg font-mono p-2 bg-gray-100 rounded">n = c / v</p>
+                        <div class="formula">n = c / v</div>
+                        <p>حيث c هي سرعة الضوء في الفراغ و v هي سرعته في الوسط.</p>
                     </div>
-                    <div class="card p-6 md:col-span-2">
-                        <h3 class="text-xl font-bold mb-3 text-blue-500">1.3. قوانين سنيل-ديكارت (Lois de Snell-Descartes)</h3>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <h4 class="font-semibold text-lg mb-2">الانعكاس (Réflexion)</h4>
-                                <p>$i = i'$ (زاوية الانعكاس = زاوية السقوط)</p>
-                                <h4 class="font-semibold text-lg mt-4 mb-2">الانكسار (Réfraction)</h4>
-                                <p class="ltr-text text-lg font-mono p-2 bg-gray-100 rounded">$n_1 \sin(i) = n_2 \sin(r)$</p>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-lg mb-2">حاسبة قانون سنيل للانكسار</h4>
-                                <form id="snell-form" class="space-y-3">
-                                    <input type="number" id="n1" placeholder="n1 (e.g., 1)" class="w-full p-2 border rounded rtl-input">
-                                    <input type="number" id="n2" placeholder="n2 (e.g., 1.5)" class="w-full p-2 border rounded rtl-input">
-                                    <input type="number" id="angle_i" placeholder="زاوية السقوط i (بالدرجات)" class="w-full p-2 border rounded rtl-input">
-                                    <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">احسب</button>
-                                </form>
-                                <p id="snell-result" class="mt-3 font-bold text-center"></p>
-                            </div>
-                        </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">1.3. قوانين سنيل-ديكارت (Lois de Snell-Descartes)</h3>
+                        <h4 class="font-semibold text-lg mb-2 text-gray-300">الانعكاس (Réflexion)</h4>
+                        <p class="mb-3">زاوية الانعكاس i' تساوي زاوية السقوط i.</p>
+                        <div class="formula">i = i'</div>
+                        <h4 class="font-semibold text-lg mt-4 mb-2 text-gray-300">الانكسار (Réfraction)</h4>
+                        <p class="mb-3">العلاقة بين زاوية السقوط i وزاوية الانكسار r هي:</p>
+                        <div class="formula">n<sub>1</sub> sin(i) = n<sub>2</sub> sin(r)</div>
+                    </div>
+                     <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">1.4. الأنظمة البصرية: الجسم والصورة</h3>
+                         <p><strong>الدقة النقطية (Stigmatisme):</strong> يكون النظام البصري دقيقاً نقطياً إذا كانت جميع الأشعة الصادرة من نقطة جسم واحدة تتجمع في نقطة صورة واحدة.</p>
+                         <ul class="list-disc list-inside mt-4 space-y-2">
+                            <li><strong>الجسم الحقيقي (Objet Réel):</strong> مصدر حقيقي للأشعة الضوئية.</li>
+                            <li><strong>الجسم الوهمي (Objet Virtuel):</strong> نقطة تلتقي فيها امتدادات الأشعة الساقطة.</li>
+                            <li><strong>الصورة الحقيقية (Image Réelle):</strong> تتكون من التقاء الأشعة الخارجة ويمكن استقبالها على حاجز.</li>
+                            <li><strong>الصورة الوهمية (Image Virtuelle):</strong> تتكون من التقاء امتدادات الأشعة الخارجة ولا يمكن استقبالها على حاجز.</li>
+                         </ul>
                     </div>
                 </div>
             </div>
 
             <!-- Tab 2: Mirrors -->
             <div id="tab2" class="tab-content hidden">
-                 <div class="grid md:grid-cols-2 gap-6">
+                 <div class="space-y-6">
                     <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-500">2.1. المرآة المستوية (Miroir Plan)</h3>
-                        <p class="mb-2">صورة الجسم الحقيقي تكون وهمية، متناظرة، وبنفس حجم الجسم.</p>
-                        <p class="ltr-text text-center text-lg font-mono p-2 bg-gray-100 rounded">OA = -OA'</p>
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">2.1. المرآة المستوية (Miroir Plan)</h3>
+                        <p class="mb-2">صورة الجسم الحقيقي تكون وهمية، متناظرة مع الجسم بالنسبة للمرآة، وبنفس حجم الجسم.</p>
+                        <div class="formula">OA = -OA'</div>
                     </div>
                     <div class="card p-6">
-                        <h3 class="text-xl font-bold mb-3 text-blue-500">2.2. صفيحة متوازية الوجهين (Lame à faces parallèles)</h3>
-                        <p>الشعاع الخارج يوازي الشعاع الساقط ولكنه يعاني من إزاحة جانبية.</p>
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">2.2. صفيحة متوازية الوجهين (Lame à faces parallèles)</h3>
+                        <p>الشعاع الضوئي الذي يعبرها يتعرض لإزاحة جانبية، لكنه يخرج موازياً لاتجاهه الأصلي.</p>
                     </div>
-                    <div class="card p-6 md:col-span-2">
-                        <h3 class="text-xl font-bold mb-3 text-blue-500">2.3. الموشور (Prisme)</h3>
-                        <p>يحلل الضوء الأبيض ويحرف مسار الأشعة الضوئية.</p>
-                        <div class="grid md:grid-cols-2 gap-4 text-center ltr-text font-mono p-4 bg-gray-100 rounded">
-                            <p>$A = r + r'$</p>
-                            <p>$D = i + i' - A$</p>
-                            <p>$n_1 \sin(i) = n_2 \sin(r)$</p>
-                            <p>$n_2 \sin(r') = n_1 \sin(i')$</p>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">2.3. الموشور (Prisme)</h3>
+                        <p>وسط شفاف يحرف مسار الأشعة الضوئية ويحلل الضوء الأبيض. معادلاته الأساسية هي:</p>
+                        <div class="space-y-3 mt-4">
+                            <div class="formula">A = r + r' &nbsp; (زاوية الموشور)</div>
+                            <div class="formula">D = i + i' - A &nbsp; (زاوية الانحراف)</div>
                         </div>
                     </div>
                  </div>
@@ -132,83 +134,85 @@
 
             <!-- Tab 3: Lenses -->
             <div id="tab3" class="tab-content hidden">
-                <div class="card p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-500">3.2. العدسات الرقيقة (Lentilles Minces)</h3>
-                    <div class="grid lg:grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="font-semibold text-lg mb-2">العلاقات الأساسية</h4>
-                            <p class="mb-2"><strong>علاقة الاقتران:</strong></p>
-                            <p class="ltr-text text-center text-lg font-mono p-2 bg-gray-100 rounded">1/OA' - 1/OA = 1/f'</p>
-                            <p class="my-4"><strong>التكبير العرضي:</strong></p>
-                            <p class="ltr-text text-center text-lg font-mono p-2 bg-gray-100 rounded">γ = A'B'/AB = OA'/OA</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-lg mb-2">حاسبة العدسات الرقيقة</h4>
-                            <form id="lens-form" class="space-y-3">
-                                <input type="number" id="pos_oa" placeholder="موضع الجسم OA (cm)" class="w-full p-2 border rounded rtl-input">
-                                <input type="number" id="focal_f" placeholder="البعد البؤري f' (cm)" class="w-full p-2 border rounded rtl-input">
-                                <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">احسب الصورة</button>
-                            </form>
-                            <div id="lens-result" class="mt-4 p-4 bg-blue-50 rounded border border-blue-200 text-center">
-                                <p>أدخل القيم لحساب خصائص الصورة.</p>
-                            </div>
-                        </div>
+                 <div class="space-y-6">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">3.1. السطح الكاسر الكروي (Dioptre Sphérique)</h3>
+                        <p class="mb-2">سطح كروي يفصل بين وسطين. علاقته الأساسية (الأصل في القمة S) هي:</p>
+                        <div class="formula">(n<sub>2</sub> / SA') - (n<sub>1</sub> / SA) = (n<sub>2</sub> - n<sub>1</sub>) / R</div>
+                        <p class="mt-2">حيث p = SA هو موضع الجسم, p' = SA' هو موضع الصورة, و R = SC هو نصف قطر التكور.</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">3.2. العدسات الرقيقة (Lentilles Minces)</h3>
+                        <p class="mb-2"><strong>علاقة الاقتران (الأصل في المركز البصري O):</strong></p>
+                        <div class="formula">1/OA' - 1/OA = 1/f'</div>
+                        <p class="mb-2 mt-4"><strong>التكبير العرضي:</strong></p>
+                        <div class="formula">&gamma; = A'B' / AB = OA' / OA</div>
+                         <p class="mb-2 mt-4"><strong>القدرة (Vergence):</strong></p>
+                        <div class="formula">C = 1/f'</div>
                     </div>
                 </div>
             </div>
 
             <!-- Tab 4: The Eye -->
             <div id="tab4" class="tab-content hidden">
-                <div class="card p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-500">4.3. عيوب الإبصار وتصحيحها</h3>
-                    <div class="grid lg:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <div class="flex justify-center space-x-2 rtl:space-x-reverse mb-4">
-                                <button id="normal-eye-btn" class="px-4 py-2 bg-blue-500 text-white rounded">عين سليمة</button>
-                                <button id="myopia-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded">قصر النظر</button>
-                                <button id="hyperopia-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded">طول النظر</button>
-                                <button id="correct-btn" class="px-4 py-2 bg-green-500 text-white rounded">تصحيح</button>
-                            </div>
-                            <div class="chart-container w-full max-w-lg mx-auto h-64 relative bg-gray-100 rounded-lg">
-                                <canvas id="eye-canvas"></canvas>
-                            </div>
-                             <p id="eye-desc" class="mt-4 text-center text-gray-700">تتكون الصورة بوضوح على الشبكية.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-lg mb-2">حاسبة تصحيح النظر</h4>
-                            <p class="text-sm text-gray-600 mb-3">احسب قدرة العدسة اللازمة لتصحيح الرؤية عن قرب (مثل حالة قصور البصر الشيخوخي).</p>
-                             <form id="eye-correction-form" class="space-y-3">
-                                <input type="number" id="pp_natural" placeholder="النقطة القريبة الطبيعية PP (m)" class="w-full p-2 border rounded rtl-input">
-                                <input type="number" id="pp_desired" placeholder="مسافة القراءة المطلوبة (m)" class="w-full p-2 border rounded rtl-input">
-                                <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">احسب القدرة</button>
-                            </form>
-                            <div id="eye-correction-result" class="mt-4 p-4 bg-blue-50 rounded border border-blue-200 text-center">
-                                <p>أدخل القيم لحساب قدرة العدسة.</p>
-                            </div>
-                        </div>
+                 <div class="space-y-6">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">4.1. نموذج العين والمطابقة</h3>
+                        <p><strong>نموذج العين المبسط:</strong> يمكن نمذجة العين كعدسة مجمعة (البلورية) ذات قدرة متغيرة، وشاشة (الشبكية).</p>
+                        <p class="mt-2"><strong>المطابقة (Accommodation):</strong> هي قدرة العين على تغيير قدرتها لرؤية الأجسام على مسافات مختلفة بوضوح.</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">4.2. النقاط المميزة للعين</h3>
+                         <ul class="list-disc list-inside mt-4 space-y-2">
+                             <li><strong>النقطة البعيدة (Punctum Remotum - PR):</strong> أبعد نقطة تراها العين بوضوح بدون مطابقة (في اللانهاية للعين السليمة).</li>
+                             <li><strong>النقطة القريبة (Punctum Proximum - PP):</strong> أقرب نقطة تراها العين بوضوح مع أقصى مطابقة (حوالي 25 سم للعين السليمة).</li>
+                         </ul>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">4.3. عيوب الإبصار وتصحيحها</h3>
+                        <ul class="list-disc list-inside mt-4 space-y-2">
+                            <li><strong>قصر النظر (Myopie):</strong> العين مجمعة أكثر من اللازم، الصورة تتكون أمام الشبكية. التصحيح: عدسة **مفرقة (divergente)**.</li>
+                            <li><strong>طول النظر (Hypermétropie):</strong> العين ليست مجمعة بما فيه الكفاية، الصورة تتكون خلف الشبكية. التصحيح: عدسة **مجمعة (convergente)**.</li>
+                            <li><strong>قصور البصر الشيخوخي (Presbytie):</strong> فقدان القدرة على المطابقة مع التقدم في العمر. التصحيح: عدسة **مجمعة** للرؤية عن قرب.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
 
             <!-- Tab 5: Radiation -->
             <div id="tab5" class="tab-content hidden">
-                <div class="card p-6">
-                     <h3 class="text-xl font-bold mb-4 text-blue-500">5.2. قانون التناقص الإشعاعي</h3>
-                     <div class="grid lg:grid-cols-2 gap-8 items-center">
-                         <div>
-                            <h4 class="font-semibold text-lg mb-2">حاسبة التناقص الإشعاعي</h4>
-                             <form id="decay-form" class="space-y-3">
-                                <input type="number" id="a0" placeholder="النشاط الأولي A₀ (Bq)" class="w-full p-2 border rounded rtl-input">
-                                <input type="number" id="t_half" placeholder="عمر النصف T½ (وحدة زمنية)" class="w-full p-2 border rounded rtl-input">
-                                <input type="number" id="time_t" placeholder="الزمن t (نفس الوحدة)" class="w-full p-2 border rounded rtl-input">
-                                <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">احسب النشاط المتبقي</button>
-                            </form>
-                            <p id="decay-result" class="mt-4 text-center font-bold"></p>
-                         </div>
-                         <div class="chart-container w-full max-w-lg mx-auto h-80 relative">
-                             <canvas id="decay-chart"></canvas>
-                         </div>
-                     </div>
+                <div class="space-y-6">
+                     <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">5.1. النشاط الإشعاعي وأنواعه</h3>
+                         <p>ظاهرة تتحول فيها النوى الذرية غير المستقرة تلقائيًا إلى نوى أكثر استقرارًا، مع إطلاق إشعاعات.</p>
+                        <ul class="list-disc list-inside mt-4 space-y-2">
+                            <li><strong>ألفا (&alpha;):</strong> إصدار نواة هيليوم. قدرة اختراق ضعيفة جداً.</li>
+                            <li><strong>بيتا (&beta;<sup>-</sup> , &beta;<sup>+</sup>):</strong> إصدار إلكترون أو بوزيترون. قدرة اختراق ضعيفة.</li>
+                            <li><strong>غاما (&gamma;):</strong> إصدار فوتون عالي الطاقة. قدرة اختراق عالية جداً.</li>
+                        </ul>
+                    </div>
+                     <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">5.2. قانون التناقص الإشعاعي</h3>
+                        <p class="mb-2">ينخفض نشاط عينة مشعة A(t) بشكل أسي مع الزمن.</p>
+                        <div class="formula">A(t) = A<sub>0</sub> e<sup>-&lambda;t</sup></div>
+                        <p class="mt-4 mb-2"><strong>عمر النصف (T<sub>1/2</sub>):</strong> الزمن اللازم لينخفض النشاط إلى النصف.</p>
+                        <div class="formula">T<sub>1/2</sub> = ln(2) / &lambda; &asymp; 0.693 / &lambda;</div>
+                    </div>
+                     <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">5.3. تفاعل الإشعاعات مع المادة</h3>
+                        <ul class="list-disc list-inside mt-4 space-y-2">
+                            <li><strong>الإشعاعات المؤينة:</strong> إشعاعات لديها طاقة كافية لنزع الإلكترونات من الذرات.</li>
+                            <li><strong>قدرة الاختراق:</strong> تزداد بالترتيب &alpha; < &beta; < &gamma;.</li>
+                            <li><strong>نقل الطاقة الخطي (TLE):</strong> الطاقة التي يودعها الإشعاع في المادة لكل وحدة مسافة.</li>
+                        </ul>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-3 text-blue-400">5.4. تطبيقات طبية</h3>
+                        <ul class="list-disc list-inside mt-4 space-y-2">
+                             <li><strong>التصوير الومضاني (Scintigraphie):</strong> استخدام مواد مشعة (مثل <sup>99m</sup>Tc) لتكوين صور وظيفية للأعضاء.</li>
+                             <li><strong>العلاج الإشعاعي (Radiothérapie):</strong> استخدام إشعاعات مؤينة عالية الطاقة لتدمير الخلايا السرطانية.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -225,10 +229,8 @@
 
                 tabButtons.forEach(button => {
                     button.classList.remove('tab-active');
-                    if(button.dataset.tab === targetTab) {
-                        button.classList.add('tab-active');
-                    }
                 });
+                e.target.classList.add('tab-active');
 
                 tabContents.forEach(content => {
                     content.classList.add('hidden');
@@ -238,303 +240,6 @@
                 });
             }
         });
-        
-        // Snell's Law Calculator
-        document.getElementById('snell-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const n1 = parseFloat(document.getElementById('n1').value);
-            const n2 = parseFloat(document.getElementById('n2').value);
-            const i_deg = parseFloat(document.getElementById('angle_i').value);
-            const resultEl = document.getElementById('snell-result');
-
-            if (isNaN(n1) || isNaN(n2) || isNaN(i_deg)) {
-                resultEl.textContent = 'الرجاء إدخال قيم عددية صالحة.';
-                return;
-            }
-            
-            const i_rad = i_deg * Math.PI / 180;
-            const sin_r = (n1 / n2) * Math.sin(i_rad);
-
-            if (sin_r > 1 || sin_r < -1) {
-                resultEl.textContent = 'انعكاس كلي داخلي. لا يوجد شعاع منكسر.';
-            } else {
-                const r_rad = Math.asin(sin_r);
-                const r_deg = r_rad * 180 / Math.PI;
-                resultEl.textContent = `زاوية الانكسار r = ${r_deg.toFixed(2)} درجة`;
-            }
-        });
-
-        // Thin Lens Calculator
-        document.getElementById('lens-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const oa = parseFloat(document.getElementById('pos_oa').value);
-            const f = parseFloat(document.getElementById('focal_f').value);
-            const resultEl = document.getElementById('lens-result');
-
-            if (isNaN(oa) || isNaN(f)) {
-                resultEl.innerHTML = '<p>الرجاء إدخال قيم عددية صالحة.</p>';
-                return;
-            }
-            
-            // Note: In convention, real object is on the left, so OA is negative.
-            const p = oa;
-            const oa_prime = 1 / (1/f + 1/p);
-            const gamma = oa_prime / p;
-
-            let nature = oa_prime > 0 ? 'حقيقية' : 'وهمية';
-            let orientation = gamma > 0 ? 'معتدلة' : 'مقلوبة';
-            let size = Math.abs(gamma) > 1 ? 'مكبرة' : (Math.abs(gamma) < 1 ? 'مصغرة' : 'بنفس الحجم');
-            
-            resultEl.innerHTML = `
-                <p><strong>موضع الصورة OA':</strong> ${oa_prime.toFixed(2)} cm</p>
-                <p><strong>التكبير γ:</strong> ${gamma.toFixed(2)}</p>
-                <p><strong>خصائص الصورة:</strong> ${nature}، ${orientation}، ${size}</p>
-            `;
-        });
-
-        // Eye Correction Calculator
-        document.getElementById('eye-correction-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // Using convention where object/image distances are negative if on the left of the lens.
-            const pp_natural_dist = -parseFloat(document.getElementById('pp_natural').value);
-            const pp_desired_dist = -parseFloat(document.getElementById('pp_desired').value);
-            const resultEl = document.getElementById('eye-correction-result');
-
-            if (isNaN(pp_natural_dist) || isNaN(pp_desired_dist)) {
-                resultEl.innerHTML = '<p>الرجاء إدخال قيم عددية صالحة.</p>';
-                return;
-            }
-
-            // The corrective lens creates a virtual image of the desired object at the natural near point.
-            // 1/f = 1/image_dist - 1/object_dist
-            const vergence = (1 / pp_natural_dist) - (1 / pp_desired_dist);
-            
-            resultEl.innerHTML = `
-                <p><strong>قدرة العدسة المطلوبة:</strong> ${vergence.toFixed(2)} ديوبتر</p>
-            `;
-        });
-
-        // Radioactive Decay Calculator
-        const decayChartCtx = document.getElementById('decay-chart').getContext('2d');
-        let decayChart = new Chart(decayChartCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'النشاط المتبقي (Bq)',
-                    data: [],
-                    borderColor: 'rgb(59, 130, 246)',
-                    tension: 0.1,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { title: { display: true, text: 'الزمن' } },
-                    y: { title: { display: true, text: 'النشاط' } }
-                }
-            }
-        });
-
-        document.getElementById('decay-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const a0 = parseFloat(document.getElementById('a0').value);
-            const t_half = parseFloat(document.getElementById('t_half').value);
-            const t = parseFloat(document.getElementById('time_t').value);
-            const resultEl = document.getElementById('decay-result');
-
-            if (isNaN(a0) || isNaN(t_half) || isNaN(t) || t_half <= 0) {
-                resultEl.textContent = 'الرجاء إدخال قيم صالحة (عمر النصف > 0).';
-                return;
-            }
-
-            const lambda = Math.log(2) / t_half;
-            const a_t = a0 * Math.exp(-lambda * t);
-
-            resultEl.textContent = `النشاط المتبقي A(t) = ${a_t.toExponential(3)} Bq`;
-            
-            // Update chart
-            const labels = [];
-            const data = [];
-            const steps = 10;
-            const max_t = t > 0 ? t * 2 : t_half * 4;
-            for (let i = 0; i <= steps; i++) {
-                const time_step = (max_t / steps) * i;
-                labels.push(time_step.toFixed(1));
-                data.push(a0 * Math.exp(-lambda * time_step));
-            }
-            decayChart.data.labels = labels;
-            decayChart.data.datasets[0].data = data;
-            decayChart.update();
-        });
-
-        // Eye Canvas Simulator
-        const eyeCanvas = document.getElementById('eye-canvas');
-        const eyeCtx = eyeCanvas.getContext('2d');
-        let currentEyeState = 'normal';
-
-        function resizeEyeCanvas() {
-            const container = eyeCanvas.parentElement;
-            eyeCanvas.width = container.clientWidth;
-            eyeCanvas.height = container.clientHeight;
-            drawEye();
-        }
-
-        function drawEye() {
-            eyeCtx.clearRect(0, 0, eyeCanvas.width, eyeCanvas.height);
-            
-            const w = eyeCanvas.width;
-            const h = eyeCanvas.height;
-            const eyeRadius = h * 0.4;
-            const eyeCenterX = w * 0.7;
-            const lensCenterX = w * 0.45;
-            const lensHeight = h * 0.9;
-            const retinaX = eyeCenterX + eyeRadius;
-
-            // Draw Retina
-            eyeCtx.beginPath();
-            eyeCtx.arc(eyeCenterX, h / 2, eyeRadius, -Math.PI / 2, Math.PI / 2);
-            eyeCtx.strokeStyle = '#333';
-            eyeCtx.lineWidth = 3;
-            eyeCtx.stroke();
-            eyeCtx.fillStyle = '#f1f1f1';
-            eyeCtx.fill();
-            
-            // Draw Eye Lens
-            eyeCtx.beginPath();
-            eyeCtx.ellipse(lensCenterX, h / 2, 10, lensHeight / 2, 0, 0, 2 * Math.PI);
-            eyeCtx.fillStyle = 'rgba(173, 216, 230, 0.7)';
-            eyeCtx.fill();
-            eyeCtx.strokeStyle = '#87ceeb';
-            eyeCtx.stroke();
-
-            // Draw Rays
-            let focalPointX;
-            let desc = '';
-            
-            switch (currentEyeState) {
-                case 'myopia':
-                    focalPointX = retinaX - 30;
-                    desc = 'قصر النظر: العين شديدة التجميع، تتكون الصورة أمام الشبكية.';
-                    break;
-                case 'hyperopia':
-                    focalPointX = retinaX + 30;
-                    desc = 'طول النظر: العين ضعيفة التجميع، تتكون الصورة خلف الشبكية.';
-                    break;
-                case 'myopia-corrected':
-                    focalPointX = retinaX;
-                    drawCorrectiveLens('diverging');
-                     desc = 'تصحيح قصر النظر بعدسة مفرقة.';
-                    break;
-                case 'hyperopia-corrected':
-                    focalPointX = retinaX;
-                    drawCorrectiveLens('converging');
-                    desc = 'تصحيح طول النظر بعدسة مجمعة.';
-                    break;
-                case 'normal':
-                default:
-                    focalPointX = retinaX;
-                    desc = 'العين السليمة: تتكون الصورة بوضوح على الشبكية.';
-                    break;
-            }
-            document.getElementById('eye-desc').textContent = desc;
-
-            drawRays(lensCenterX, h, focalPointX);
-        }
-
-        function drawCorrectiveLens(type) {
-             const w = eyeCanvas.width;
-             const h = eyeCanvas.height;
-             const lensX = w * 0.2;
-             const lensH = h;
-             
-             eyeCtx.beginPath();
-             eyeCtx.lineWidth = 2;
-             eyeCtx.strokeStyle = '#22c55e';
-             
-             if (type === 'diverging') {
-                 eyeCtx.moveTo(lensX, 0);
-                 eyeCtx.lineTo(lensX, lensH * 0.2);
-                 eyeCtx.moveTo(lensX-5, lensH*0.2);
-                 eyeCtx.lineTo(lensX+5, lensH*0.2);
-
-                 eyeCtx.moveTo(lensX, lensH * 0.8);
-                 eyeCtx.lineTo(lensX, lensH);
-                 eyeCtx.moveTo(lensX-5, lensH*0.8);
-                 eyeCtx.lineTo(lensX+5, lensH*0.8);
-                 
-                 eyeCtx.moveTo(lensX, lensH*0.2);
-                 eyeCtx.lineTo(lensX-5, lensH*0.25);
-                 eyeCtx.lineTo(lensX, lensH*0.3);
-
-                 eyeCtx.moveTo(lensX, lensH*0.8);
-                 eyeCtx.lineTo(lensX-5, lensH*0.75);
-                 eyeCtx.lineTo(lensX, lensH*0.7);
-
-             } else { // converging
-                 eyeCtx.moveTo(lensX, 0);
-                 eyeCtx.lineTo(lensX, lensH * 0.2);
-                 eyeCtx.moveTo(lensX-5, lensH*0.2);
-                 eyeCtx.lineTo(lensX+5, lensH*0.2);
-
-                 eyeCtx.moveTo(lensX, lensH * 0.8);
-                 eyeCtx.lineTo(lensX, lensH);
-                 eyeCtx.moveTo(lensX-5, lensH*0.8);
-                 eyeCtx.lineTo(lensX+5, lensH*0.8);
-                 
-                 eyeCtx.moveTo(lensX, lensH*0.2);
-                 eyeCtx.lineTo(lensX+5, lensH*0.25);
-                 eyeCtx.lineTo(lensX, lensH*0.3);
-                 
-                 eyeCtx.moveTo(lensX, lensH*0.8);
-                 eyeCtx.lineTo(lensX+5, lensH*0.75);
-                 eyeCtx.lineTo(lensX, lensH*0.7);
-             }
-             eyeCtx.stroke();
-        }
-
-        function drawRays(lensCenterX, h, focalPointX) {
-            eyeCtx.save();
-            eyeCtx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
-            eyeCtx.lineWidth = 1.5;
-            
-            const rayY1 = h * 0.35;
-            const rayY2 = h * 0.65;
-            
-            // Ray 1
-            eyeCtx.beginPath();
-            eyeCtx.moveTo(0, rayY1);
-            eyeCtx.lineTo(lensCenterX, rayY1);
-            eyeCtx.lineTo(focalPointX, h / 2);
-            eyeCtx.stroke();
-            
-            // Ray 2
-            eyeCtx.beginPath();
-            eyeCtx.moveTo(0, rayY2);
-            eyeCtx.lineTo(lensCenterX, rayY2);
-            eyeCtx.lineTo(focalPointX, h / 2);
-            eyeCtx.stroke();
-            eyeCtx.restore();
-        }
-
-        document.getElementById('normal-eye-btn').addEventListener('click', () => { currentEyeState = 'normal'; drawEye(); });
-        document.getElementById('myopia-btn').addEventListener('click', () => { currentEyeState = 'myopia'; drawEye(); });
-        document.getElementById('hyperopia-btn').addEventListener('click', () => { currentEyeState = 'hyperopia'; drawEye(); });
-        document.getElementById('correct-btn').addEventListener('click', () => {
-            if (currentEyeState === 'myopia') currentEyeState = 'myopia-corrected';
-            if (currentEyeState === 'hyperopia') currentEyeState = 'hyperopia-corrected';
-            drawEye();
-        });
-        
-        window.addEventListener('resize', resizeEyeCanvas);
-        
-        // Initial draw
-        document.addEventListener('DOMContentLoaded', () => {
-            resizeEyeCanvas();
-        });
-
     </script>
 </body>
 </html>
